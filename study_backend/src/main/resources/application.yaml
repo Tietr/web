@@ -1,4 +1,6 @@
 #spring.application.name=study_backend_and_frontend
+
+#文件配置信息，使用mysql，不要改
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
