@@ -4,16 +4,21 @@ package com.learn.config;
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.learn.entity.RestBean;
+import com.learn.service.AuthorizeService;
+import jakarta.annotation.Resource;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authorization.AuthorityAuthorizationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -25,6 +30,10 @@ import java.io.IOException;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
+
+    @Resource
+    AuthorizeService authorizeService;
+
     //登录接口
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -50,6 +59,7 @@ public class SecurityConfiguration {
                     conf.logoutSuccessUrl("/login");
                     conf.permitAll();
                 })
+                .userDetailsService(authorizeService)//或者下面再加个bean，但是教程中的写法，在该版本不支持
                 .exceptionHandling(conf->{
                     conf.authenticationEntryPoint(this::onAuthenticationFailure);//无权限控制
                 })
@@ -57,11 +67,21 @@ public class SecurityConfiguration {
                 .build();
 
     }
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        response.setCharacterEncoding("gbk");
-        response.getWriter().write(JSONObject.toJSONString(RestBean.success("success")));
+//    @Bean
+//    public AuthorityAuthorizationManager authorityAuthorizationManager( HttpSecurity security ) throws Exception {
+//
+//    }
+
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
-    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
+    
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
+        response.setCharacterEncoding("gbk");
+        response.getWriter().write(JSONObject.toJSONString(RestBean.success("登录成功")));
+    }
+    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException {
         response.setCharacterEncoding("gbk");
         response.getWriter().write(JSONObject.toJSONString(RestBean.failure(401, exception.getMessage())));
     }
