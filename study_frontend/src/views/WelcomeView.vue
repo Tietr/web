@@ -11,10 +11,14 @@
           src="https://q2.itc.cn/q_70/images03/20240127/12b80fe65bfe469a946f2f13a5a22d38.jpeg"/>
     </div>
     <div class="welcome-title">
+
+
       <div>个人学习开发项目模版</div>
     </div>
     <div style="width: 400px;background-color: white" >
-      <router-view/>
+      <Transition name="el-zoom-in-center">
+        <router-view/>
+      </Transition>
     </div>
   </div>
 

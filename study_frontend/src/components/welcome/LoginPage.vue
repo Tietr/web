@@ -29,7 +29,7 @@ const login = () => {
 </script>
 
 <template>
-  <div style="text-align: center;margin:0 40px ">
+  <div style="text-align: center; margin:20vh 40px ">
     <div style="text-align: center; margin-top: 150px; ">
       <!--          150px 可以改成30vh-->
       <div style="font-size: 25px; font-weight: bold">登录</div>
@@ -62,7 +62,7 @@ const login = () => {
       <span style="color: grey;font-size: 14px">没有账号</span>
     </el-divider>
     <div style="margin-top: 20px; ">
-      <el-button style="width: 270px" type="primary" plain >注册账号</el-button>
+      <el-button @click="router.push('/register')" style="width: 270px" type="primary" plain >注册账号</el-button>
     </div>
   </div>
 

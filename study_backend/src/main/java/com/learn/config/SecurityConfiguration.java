@@ -82,16 +82,13 @@ public class SecurityConfiguration {
                     conf.authenticationEntryPoint(this::onAuthenticationFailure);//无权限控制
                 })
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors( conf->{
+                .cors( conf-> {
                     conf.configurationSource(this.corsConfigurationSource());
                 })
                 .build();
 
     }
-//    @Bean
-//    public AuthorityAuthorizationManager authorityAuthorizationManager( HttpSecurity security ) throws Exception {
-//
-//    }
+
     @Bean
     public PersistentTokenRepository persistentTokenRepository() {
         //持续化存储Token
