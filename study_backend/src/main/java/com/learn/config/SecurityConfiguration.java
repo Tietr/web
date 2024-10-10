@@ -24,10 +24,13 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import javax.sql.DataSource;
 import java.io.IOException;
 
 //配置，并添加网站验证？
@@ -38,9 +41,12 @@ public class SecurityConfiguration {
     @Resource
     AuthorizeService authorizeService;
 
+    @Resource
+    DataSource dataSource;
+
     //登录接口
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, PersistentTokenRepository repository) throws Exception {
         return http
                 //验证请求拦截和放行请求
                 .authorizeHttpRequests( auth->{
@@ -65,6 +71,12 @@ public class SecurityConfiguration {
 //                    conf.logoutSuccessUrl("/login");
                     conf.permitAll();
                 })
+                .rememberMe( conf->{
+                    conf.rememberMeParameter("remember");
+                    conf.tokenRepository(repository);
+                    //7天免输入登录
+                    conf.tokenValiditySeconds(60*60*24*7);
+                })
                 .userDetailsService(authorizeService)//或者下面再加个bean，但是教程中的写法，在该版本不支持
                 .exceptionHandling(conf->{
                     conf.authenticationEntryPoint(this::onAuthenticationFailure);//无权限控制
@@ -80,6 +92,15 @@ public class SecurityConfiguration {
 //    public AuthorityAuthorizationManager authorityAuthorizationManager( HttpSecurity security ) throws Exception {
 //
 //    }
+    @Bean
+    public PersistentTokenRepository persistentTokenRepository() {
+        //持续化存储Token
+        JdbcTokenRepositoryImpl jdbcTokenRepository = new JdbcTokenRepositoryImpl();
+        jdbcTokenRepository.setDataSource(dataSource);
+//        jdbcTokenRepository.setCreateTableOnStartup(true); --创建这个表后就可以取消了
+        jdbcTokenRepository.setCreateTableOnStartup(false);
+        return jdbcTokenRepository;
+    }
 
 //    解决跨域的报错问题,可能需要修改
     private CorsConfigurationSource corsConfigurationSource() {
