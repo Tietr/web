@@ -1,5 +1,4 @@
 package com.learn.service;
-
 import com.learn.entity.Account;
 import com.learn.mapper.UserMapper;
 import jakarta.annotation.Resource;
@@ -8,7 +7,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
 @Service//权限校验服务
 public class AuthorizeService implements UserDetailsService {
 
@@ -32,7 +30,5 @@ public class AuthorizeService implements UserDetailsService {
                 .password(account.getPassword())
                 .roles("user")
                 .build();
-
     }
-
 }

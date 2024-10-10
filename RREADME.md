@@ -8,3 +8,4 @@
 # 安装额外组件
 1. element plus
 2. vue-axios
+3. axios 异步请求

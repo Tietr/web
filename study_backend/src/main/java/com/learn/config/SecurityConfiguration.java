@@ -16,6 +16,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.CorsConfigurer;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -23,6 +24,9 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.io.IOException;
 
@@ -56,7 +60,9 @@ public class SecurityConfiguration {
                 })
                 .logout( conf ->{
                     conf.logoutUrl("/api/auth/logout");
-                    conf.logoutSuccessUrl("/login");
+                    conf.logoutSuccessUrl("/");
+                    conf.logoutSuccessHandler(this::onAuthenticationSuccess);
+//                    conf.logoutSuccessUrl("/login");
                     conf.permitAll();
                 })
                 .userDetailsService(authorizeService)//或者下面再加个bean，但是教程中的写法，在该版本不支持
@@ -64,6 +70,9 @@ public class SecurityConfiguration {
                     conf.authenticationEntryPoint(this::onAuthenticationFailure);//无权限控制
                 })
                 .csrf(AbstractHttpConfigurer::disable)
+                .cors( conf->{
+                    conf.configurationSource(this.corsConfigurationSource());
+                })
                 .build();
 
     }
@@ -72,17 +81,34 @@ public class SecurityConfiguration {
 //
 //    }
 
+//    解决跨域的报错问题,可能需要修改
+    private CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration cors = new CorsConfiguration();
+        cors.addAllowedOriginPattern(/*"http://localhost:3000"*/"*");//waring：这里写星号非常不安全，之后需要修改
+        cors.setAllowCredentials(true);
+        cors.addAllowedHeader("*");
+        cors.addAllowedMethod("*");
+        cors.addExposedHeader("*");
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", cors);
+        return source;
+    }
+
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
     
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
-        response.setCharacterEncoding("gbk");
-        response.getWriter().write(JSONObject.toJSONString(RestBean.success("登录成功")));
+        response.setCharacterEncoding("utf-8");
+        if(request.getRequestURI().contains("/login")) {
+            response.getWriter().write(JSONObject.toJSONString(RestBean.success("登录成功")));
+        }else if(request.getRequestURI().contains("/logout")) {
+            response.getWriter().write(JSONObject.toJSONString(RestBean.success("退出登录成功")));
+        }
     }
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException {
-        response.setCharacterEncoding("gbk");
+        response.setCharacterEncoding("utf-8");
         response.getWriter().write(JSONObject.toJSONString(RestBean.failure(401, exception.getMessage())));
     }
 
