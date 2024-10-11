@@ -2,6 +2,7 @@
 import {Lock, User, Message, ChatLineRound} from "@element-plus/icons-vue";
 import router from "@/router/index.js";
 import {reactive,ref} from "vue";
+import {ElMessage} from "element-plus";
 
 const form = reactive({
   username: "",
@@ -47,7 +48,6 @@ const onValidate = (prop,isValid) => {
     isEmailValid.value = isValid;
   }
 }
-
 const rules = {
   username: [
     { validator: validName, trigger:['blur','change']}
@@ -63,10 +63,19 @@ const rules = {
     {type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'],},
   ],
   code:[
-
+    {required: true, message: '请输入获取到的验证码', trigger:'blur',},
   ]
 }
-
+const formRef = ref();
+const register = () => {
+formRef.value.validate((valid) => {
+  if(valid){
+    ElMessage.success("正在提交上述信息")
+  }else {
+    ElMessage.warning("请完整填写注册信息")
+  }
+})
+}
 
 
 </script>
@@ -78,7 +87,7 @@ const rules = {
       <div style="font-size: 14px;color: grey">欢迎注册，请在下方填写您的相关信息</div>
     </div>
     <div style="margin-top: 50px;">
-      <el-form :model="form" :rules="rules" @validate="onValidate">
+      <el-form :model="form" :rules="rules" @validate="onValidate" ref="formRef" >
         <el-form-item prop="username">
           <el-input v-model="form.username" type="text" placeholder="用户名">
             <template #prefix>
@@ -123,7 +132,7 @@ const rules = {
         </el-form-item>
       </el-form>
       <div style="margin-top: 40px; ">
-        <el-button style="width: 270px" type="success">立即注册</el-button>
+        <el-button style="width: 270px" type="success" @click="register">立即注册</el-button>
       </div>
       <div style="margin-top: 20px">
         <span style="font-size: 12px;color: grey;">已有账号？</span>
