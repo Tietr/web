@@ -3,6 +3,7 @@ import {Lock, User, Message, ChatLineRound} from "@element-plus/icons-vue";
 import router from "@/router/index.js";
 import {reactive,ref} from "vue";
 import {ElMessage} from "element-plus";
+import {post} from "@/net/index.js";
 
 const form = reactive({
   username: "",
@@ -76,7 +77,13 @@ formRef.value.validate((valid) => {
   }
 })
 }
-
+const validateEmail=()=>{
+  post("api/auth/valid-email",{
+    email: form.email,
+  },(message)=>{
+    ElMessage.success(message)
+  })
+}
 
 </script>
 
@@ -126,7 +133,7 @@ formRef.value.validate((valid) => {
               </el-input>
             </el-col>
             <el-col :span="8">
-              <el-button type="primary" :disabled="!isEmailValid" >获取验证码</el-button>
+              <el-button type="primary" :disabled="!isEmailValid" @click="validateEmail" >获取验证码</el-button>
             </el-col>
           </el-row>
         </el-form-item>

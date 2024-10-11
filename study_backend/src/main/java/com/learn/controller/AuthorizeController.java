@@ -2,6 +2,7 @@ package com.learn.controller;
 import com.learn.entity.RestBean;
 import com.learn.service.AuthorizeService;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.constraints.Pattern;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,9 +18,9 @@ public class AuthorizeController {
     @Resource
     AuthorizeService authorizeService;
 
-    @PostMapping("")
-    public RestBean<String> validateEmail(@Pattern(regexp=EMAIL_REGEX) @RequestParam("email") String name){
-        if(authorizeService.sendValidateEmail(name)){
+    @PostMapping("valid-email")
+    public RestBean<String> validateEmail(@Pattern(regexp=EMAIL_REGEX) @RequestParam("email") String name,HttpSession session) {
+        if(authorizeService.sendValidateEmail(name,session.getId())){
             return RestBean.success("邮件已发送，请注意查收");
         }else {
             return RestBean.failure(400,"邮箱发送失败，请联系管理");
