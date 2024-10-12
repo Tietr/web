@@ -44,6 +44,8 @@ const validPasswordCheck = (rule, value, callback) => {
   }
 }
 const isEmailValid = ref(false)
+const coldTime = ref(0)
+
 const onValidate = (prop,isValid) => {
   if(prop === 'email'){
     isEmailValid.value = isValid;
@@ -65,6 +67,7 @@ const rules = {
   ],
   code:[
     {required: true, message: '请输入获取到的验证码', trigger:'blur',},
+    { min: 6, max: 6, message: '请输入正确的验证码', trigger: ['blur','change'] },
   ]
 }
 const formRef = ref();
@@ -72,6 +75,15 @@ const register = () => {
 formRef.value.validate((valid) => {
   if(valid){
     ElMessage.success("正在提交上述信息")
+    post("api/auth/register",{
+      username: form.username,
+      password: form.password,
+      email: form.email,
+      code: form.code,
+    },(message)=>{
+      ElMessage.success(message);
+      router.push("/login");
+    })
   }else {
     ElMessage.warning("请完整填写注册信息")
   }
@@ -81,14 +93,18 @@ const validateEmail=()=>{
   post("api/auth/valid-email",{
     email: form.email,
   },(message)=>{
+    coldTime.value = 60
+    setInterval(()=>coldTime.value--,1000)
     ElMessage.success(message)
   })
 }
 
+
+
 </script>
 
 <template>
-  <div style="text-align: center; margin:20vh 40px; ">
+  <div style="text-align: center; margin:20vh 20px; ">
     <div style="margin: 50px;">
       <div style="font-size: 25px; font-weight: bold">注册新用户</div>
       <div style="font-size: 14px;color: grey">欢迎注册，请在下方填写您的相关信息</div>
@@ -96,21 +112,21 @@ const validateEmail=()=>{
     <div style="margin-top: 50px;">
       <el-form :model="form" :rules="rules" @validate="onValidate" ref="formRef" >
         <el-form-item prop="username">
-          <el-input v-model="form.username" type="text" placeholder="用户名">
+          <el-input v-model="form.username" type="text" placeholder="用户名" maxlength="8">
             <template #prefix>
               <el-icon ><User /></el-icon>
             </template>
           </el-input>
         </el-form-item>
         <el-form-item prop="password">
-          <el-input v-model="form.password" type="password" placeholder="输入密码" >
+          <el-input v-model="form.password" type="password" placeholder="输入密码" maxlength="20">
             <template #prefix>
               <el-icon><Lock /></el-icon>
             </template>
           </el-input>
         </el-form-item>
         <el-form-item prop="password_repeat">
-          <el-input v-model="form.password_repeat" type="password" placeholder="重复输入密码" >
+          <el-input v-model="form.password_repeat" type="password" placeholder="重复输入密码" maxlength="20">
             <template #prefix>
               <el-icon><Lock /></el-icon>
             </template>
@@ -124,16 +140,16 @@ const validateEmail=()=>{
           </el-input>
         </el-form-item>
         <el-form-item prop="code">
-          <el-row :gutter="7">
-            <el-col :span="16" >
-              <el-input v-model="form.code" type="text" placeholder="请输入验证码">
+          <el-row :gutter="20">
+            <el-col :span="15" >
+              <el-input v-model="form.code" type="text" placeholder="请输入验证码" maxlength="6">
                 <template #prefix>
                   <el-icon><ChatLineRound /></el-icon>
                 </template>
               </el-input>
             </el-col>
             <el-col :span="8">
-              <el-button type="primary" :disabled="!isEmailValid" @click="validateEmail" >获取验证码</el-button>
+              <el-button style="width: 124px" type="primary" :disabled="!isEmailValid || coldTime > 0" @click="validateEmail" >{{ coldTime > 0 ?"请等待"+ coldTime +"秒":"获取验证码" }}</el-button>
             </el-col>
           </el-row>
         </el-form-item>
