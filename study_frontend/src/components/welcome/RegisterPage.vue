@@ -82,7 +82,7 @@ formRef.value.validate((valid) => {
       code: form.code,
     },(message)=>{
       ElMessage.success(message);
-      router.push("/login");
+      router.push("/");
     })
   }else {
     ElMessage.warning("请完整填写注册信息")
@@ -90,7 +90,7 @@ formRef.value.validate((valid) => {
 })
 }
 const validateEmail=()=>{
-  post("api/auth/valid-email",{
+  post("api/auth/valid-register-email",{
     email: form.email,
   },(message)=>{
     coldTime.value = 60
@@ -98,8 +98,6 @@ const validateEmail=()=>{
     ElMessage.success(message)
   })
 }
-
-
 
 </script>
 

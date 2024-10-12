@@ -15,7 +15,7 @@ public class RestBean<T> {
     }
 
     public static <T> RestBean<T> success(T data) {
-        return  new RestBean<T>(200,true,data);
+        return new RestBean<T>(200,true,data);
     }
     public static <T> RestBean<T> success() {
         return  new RestBean<T>(200,true,null);
@@ -28,3 +28,4 @@ public class RestBean<T> {
         return new RestBean<>(status,false,data);
     }
 }
+//发回给前端的

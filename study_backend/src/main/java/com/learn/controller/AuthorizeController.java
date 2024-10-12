@@ -4,6 +4,7 @@ import com.learn.service.AuthorizeService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.constraints.Pattern;
+import jakarta.websocket.Session;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,10 +22,20 @@ public class AuthorizeController {
     @Resource
     AuthorizeService authorizeService;
 
-    @PostMapping("valid-email")
-    public RestBean<String> validateEmail(@Pattern(regexp=EMAIL_REGEX) @RequestParam("email") String name,HttpSession session) {
+    @PostMapping("/valid-register-email")
+    public RestBean<String> validateRegisterEmail(@Pattern(regexp=EMAIL_REGEX) @RequestParam("email") String name,HttpSession session) {
 
-        String s = authorizeService.sendValidateEmail(name,session.getId());
+        String s = authorizeService.sendValidateEmail(name,session.getId(),false);
+        if(s == null){
+            return RestBean.success("邮件已发送，请注意查收");
+        }else {
+            return RestBean.failure(400,s);
+        }
+    }
+    @PostMapping("/valid-reset-email")
+    public RestBean<String> validateResetEmail(@Pattern(regexp=EMAIL_REGEX) @RequestParam("email") String name,HttpSession session) {
+
+        String s = authorizeService.sendValidateEmail(name,session.getId(),true);
         if(s == null){
             return RestBean.success("邮件已发送，请注意查收");
         }else {
@@ -47,6 +58,42 @@ public class AuthorizeController {
         }
 
     }
+    /**
+     * 1.发邮件
+     * 2.
+     */
+    @PostMapping("/start-reset")
+    public RestBean<String> startReset(
+            @Pattern(regexp = EMAIL_REGEX) @RequestParam("email") String email,
+            @Length(min = 6,max = 6) @RequestParam("code") String code,
+            HttpSession session
+    ){
+        String s = authorizeService.validateOnly(email,code,session.getId());
+        if(s == null){
+            //TODO: 没懂
+            session.setAttribute("reset-password",email);
+            return RestBean.success();
+        }else {
+            return RestBean.failure(400,s);
+        }
+    }
 
+    @PostMapping("/do-reset")
+    public RestBean<String> restPassword(
+            @Pattern(regexp = PASSWORD_REGEX) @Length(min = 6,max = 20) @RequestParam("password") String password,
+            HttpSession session
+            ){
+        String email = (String)session.getAttribute("reset-password");
+        if (email == null) {
+            return RestBean.failure(401,"请先完成邮箱验证");
+        }else if(authorizeService.resetPassword(email,password)){
+            session.removeAttribute("reset-password");
+            return RestBean.success("密码重置成功");
+        }else {
+            return RestBean.failure(500,"内部错误，请联系管理员");
+        }
+
+
+    }
 
 }
