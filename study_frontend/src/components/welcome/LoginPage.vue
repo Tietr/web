@@ -3,15 +3,16 @@
 import {Lock, User} from "@element-plus/icons-vue";
 import {reactive} from "vue";
 import {ElMessage} from "element-plus";
-import {post} from "@/net/index.js";
+import {get, post} from "@/net/index.js";
 import router from "@/router/index.js";
+import {useStore} from "@/stores/index.js";
 
 const form = reactive({
   username: "",
   password: "",
   remember: false,
 })
-
+const store = useStore();
 const login = () => {
   if(!form.username || !form.password){
     ElMessage.warning('请填写用户名和密码后再进行登录！')
@@ -22,6 +23,13 @@ const login = () => {
       remember: form.remember,
     },(message)=>{
       ElMessage.success(message);
+      console.log("login:",message);
+      get('/api/user/me', (message) => {
+        store.auth.user = message
+        router.push('/index')
+      }, () => {
+        store.auth.user = null;
+      })
       router.push("/index");
     })
   }

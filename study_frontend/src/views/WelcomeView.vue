@@ -13,6 +13,7 @@
     <div class="welcome-title">
       <div>个人学习开发项目模版</div>
     </div>
+
     <div style="width: 400px;background-color: white;z-index: 1" >
       <router-view v-slot="{ Component }">
         <transition name="el-zoom-in-center" mode="out-in">

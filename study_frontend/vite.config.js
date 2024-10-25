@@ -9,6 +9,7 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 // https://vitejs.dev/config/
 export default defineConfig({
   server:{
+    // 前端启动窗口
     host:'127.0.0.1',
     port:3000
   },

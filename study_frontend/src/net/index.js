@@ -18,7 +18,6 @@ function post(url,data,success,failure = defaultFailure, error = defaultError) {
         }
     }).catch(error)
 }
-
 function get(url,success,failure = defaultFailure,error = defaultError) {
     axios.get(url,{
         withCredentials:true
@@ -30,5 +29,16 @@ function get(url,success,failure = defaultFailure,error = defaultError) {
         }
     }).catch(error)
 }
-
-export {get,post};
+function getByParam(url, params, success, failure = defaultFailure, error = defaultError) {
+    axios.get(url, {
+        params: params, // 通过 params 传递查询参数
+        withCredentials: true
+    }).then(({data}) => {
+        if (data.success) {
+            success(data.message, data.status);
+        } else {
+            failure(data.message, data.status);
+        }
+    }).catch(error);
+}
+export {get,post,getByParam};

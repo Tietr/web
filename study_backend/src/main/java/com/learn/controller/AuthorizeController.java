@@ -4,7 +4,6 @@ import com.learn.service.AuthorizeService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.constraints.Pattern;
-import jakarta.websocket.Session;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,10 +20,8 @@ public class AuthorizeController {
     private final String PASSWORD_REGEX = "^[^一-龥]+$";
     @Resource
     AuthorizeService authorizeService;
-
     @PostMapping("/valid-register-email")
     public RestBean<String> validateRegisterEmail(@Pattern(regexp=EMAIL_REGEX) @RequestParam("email") String name,HttpSession session) {
-
         String s = authorizeService.sendValidateEmail(name,session.getId(),false);
         if(s == null){
             return RestBean.success("邮件已发送，请注意查收");
@@ -34,7 +31,6 @@ public class AuthorizeController {
     }
     @PostMapping("/valid-reset-email")
     public RestBean<String> validateResetEmail(@Pattern(regexp=EMAIL_REGEX) @RequestParam("email") String name,HttpSession session) {
-
         String s = authorizeService.sendValidateEmail(name,session.getId(),true);
         if(s == null){
             return RestBean.success("邮件已发送，请注意查收");
@@ -42,7 +38,6 @@ public class AuthorizeController {
             return RestBean.failure(400,s);
         }
     }
-
     @PostMapping("/register")
     public RestBean<String> registerUser(
             @Pattern(regexp= USERNAME_REGEX) @Length(min = 2,max = 8) @RequestParam("username") String username,
@@ -56,12 +51,7 @@ public class AuthorizeController {
         }else {
             return RestBean.failure(400,s);
         }
-
     }
-    /**
-     * 1.发邮件
-     * 2.
-     */
     @PostMapping("/start-reset")
     public RestBean<String> startReset(
             @Pattern(regexp = EMAIL_REGEX) @RequestParam("email") String email,
@@ -77,7 +67,6 @@ public class AuthorizeController {
             return RestBean.failure(400,s);
         }
     }
-
     @PostMapping("/do-reset")
     public RestBean<String> restPassword(
             @Pattern(regexp = PASSWORD_REGEX) @Length(min = 6,max = 20) @RequestParam("password") String password,
@@ -92,8 +81,5 @@ public class AuthorizeController {
         }else {
             return RestBean.failure(500,"内部错误，请联系管理员");
         }
-
-
     }
-
 }

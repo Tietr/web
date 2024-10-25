@@ -58,12 +58,15 @@ const onValidate = (prop,isValid) => {
 }
 
 const validateEmail=()=>{
+  coldTime.value = 60
   post("api/auth/valid-reset-email",{
     email: form.email,
   },(message)=>{
-    coldTime.value = 60
     setInterval(()=>coldTime.value--,1000)
     ElMessage.success(message)
+  },(message)=>{
+    ElMessage.warning(message)
+    coldTime.value = 0
   })
 }
 const formRef = ref();
@@ -95,7 +98,6 @@ const doReset=()=>{
     }
   })
 }
-
 </script>
 
 <template>
@@ -139,6 +141,9 @@ const doReset=()=>{
         </div>
         <div style="margin-top: 70px;">
           <el-button @click="startReset" style="width: 270px" type="danger">开始重置密码</el-button>
+        </div>
+        <div style="margin-top: 20px;">
+          <el-button @click="router.push('/')" style="width: 270px" type="primary">返回登录界面</el-button>
         </div>
       </div>
     </Transition>

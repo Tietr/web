@@ -7,8 +7,8 @@ import 'element-plus/dist/index.css'
 import axios from "axios";
 
 const app = createApp(App)
-
-axios.defaults.baseURL = 'http://127.0.0.1:8080'
+// 后端端口
+axios.defaults.baseURL = 'http://localhost:8080';
 axios.defaults.headers.post['Content-Type'] = 'charset=utf-8';
 axios.defaults.headers.get['Content-Type'] = 'charset=utf-8';
 

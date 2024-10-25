@@ -21,23 +21,18 @@ import java.util.concurrent.TimeUnit;
 @Service//权限校验服务
 public class AuthorizeServiceImpl implements AuthorizeService {
 
-
     //引入Mapper
     //用户数据库
     @Resource
-    UserMapper mapper;
-
+    UserMapper userMapper;
     @Value("${spring.mail.username}")
     private String from;
     @Resource
     MailSender mailSender;
-
     //用户注册ID-验证码临时存储
     @Resource
     StringRedisTemplate stringRedisTemplate;
-
-//Bean好像是注册静态资源，而Resource是取这个资源
-//hashcode
+    //hash
 //    @Resource
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
@@ -48,7 +43,7 @@ public class AuthorizeServiceImpl implements AuthorizeService {
         if (username == null) {
             throw new UsernameNotFoundException("用户名为空");
         }
-        Account account = mapper.findAccountByNameOrEmail(username);
+        Account account = userMapper.findAccountByNameOrEmail(username);
         if (account == null) {
             throw new UsernameNotFoundException("用户名或密码错误");
         }
@@ -75,27 +70,24 @@ public class AuthorizeServiceImpl implements AuthorizeService {
                 return "验证码失效，请重新获取验证码";
             }
             if (s.equals(code)) {
-                Account account = mapper.findAccountByNameOrEmail(username);
+                Account account = userMapper.findAccountByNameOrEmail(username);
                 if (account != null) {
                     return "此用户名已被注册";
                 }
                 stringRedisTemplate.delete(Key);
                 password = encoder.encode(password);//hash
-                if( mapper.createAccount(username, password, email) >0){
+                if( userMapper.createAccount(username, password, email) >0){
                     return null;
                 }else {
                     return "内部错误，请联系管理员";
                 }
-
             }else {
                 return "验证码错误,请检查后再提交";
             }
         }else {
             return "请先获取验证码邮件";
         }
-
     }
-
     @Override
     public String sendValidateEmail(String email ,String sessionId,boolean hasAccount) {
         String Key = "email:" +sessionId+":"+ email+":"+hasAccount;
@@ -106,7 +98,7 @@ public class AuthorizeServiceImpl implements AuthorizeService {
             }
         }
         //如果存在了用户存在
-        Account account = mapper.findAccountByNameOrEmail(email);
+        Account account = userMapper.findAccountByNameOrEmail(email);
         if(hasAccount && account == null) {
             return "没有此邮件地址的账户";
         }
@@ -116,24 +108,20 @@ public class AuthorizeServiceImpl implements AuthorizeService {
         Random random = new Random();
         int code = random.nextInt(899999) + 100000;
         SimpleMailMessage message = new SimpleMailMessage();
-
         message.setFrom(from);
         message.setTo(email);
         message.setSubject("您的验证邮件");
         message.setText("您的验证码是："+ code);
         try {
             mailSender.send(message);
-
             //存入redis
             stringRedisTemplate.opsForValue().set(Key,String.valueOf(code),3, TimeUnit.MINUTES);
-
             return null;
         }catch (MailException e) {
             e.printStackTrace();
             return "邮件发送失败，请检查邮件是否有效";
         }
     }
-
     @Override
     public String validateOnly(String email, String code, String sessionId) {
         String Key = "email:" +sessionId+":"+ email+":true";
@@ -151,13 +139,10 @@ public class AuthorizeServiceImpl implements AuthorizeService {
         }else {
             return "请先获取验证码邮件";
         }
-
     }
-
     @Override
     public boolean resetPassword(String email, String password) {
         password = encoder.encode(password);
-        return mapper.resetPasswordByEmail(email,password) > 0;
+        return userMapper.resetPasswordByEmail(email,password) > 0;
     }
-
 }

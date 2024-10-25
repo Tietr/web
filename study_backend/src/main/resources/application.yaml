@@ -2,11 +2,15 @@
 
 #文件配置信息，使用mysql，不要改
 spring:
+#  使用mysql数据库
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/study?useUnicode=true&characterEncoding=utf-8
-    username: root
-    password: 123456
+#   url:你的myql数据库端口和schema名
+#   username: 你的mysql名
+#   你的mysql账号密码
+    url: jdbc:mysql://${DB_HOST:127.0.0.1}:${DB_PORT:3306}/${DB_NAME:study}?useUnicode=true&characterEncoding=utf-8
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:123456}
   jpa:
     properties:
       hibernate:
@@ -14,21 +18,20 @@ spring:
     hibernate:
       ddl-auto: update
   mail:
-    host: smtp.qq.com
-    username: tietr@qq.com
-    password: vzuqfpshsicjebgb
-    port: 465
+    host: ${MAIL_HOST:smtp.qq.com}
+    port: ${MAIL_PORT:465}
+    username: ${MAIL_USERNAME:user@example.com}
+    password: ${MAIL_PASSWORD:password}
     properties:
       mail:
         smtp:
           auth: true
           ssl:
             enable: true
-      from: tietr@qq.com
+        from: ${MAIL_USERNAME:user@example.com}
     protocol: smtps
-
-
   data:
+#    请安装redis服务
     redis:
       database: 0
       host: localhost

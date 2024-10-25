@@ -90,15 +90,17 @@ formRef.value.validate((valid) => {
 })
 }
 const validateEmail=()=>{
+  coldTime.value = 60
   post("api/auth/valid-register-email",{
     email: form.email,
   },(message)=>{
-    coldTime.value = 60
     setInterval(()=>coldTime.value--,1000)
     ElMessage.success(message)
+  },(message)=>{
+    ElMessage.warning(message)
+    coldTime.value = 0
   })
 }
-
 </script>
 
 <template>
