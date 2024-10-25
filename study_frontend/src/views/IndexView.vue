@@ -6,7 +6,6 @@ import {useStore} from "@/stores/index.js";
 import {Film, Headset, House, UserFilled} from "@element-plus/icons-vue";
 
 const store = useStore()
-//TODO 退出登录按钮
 const logout =()=>{
     get('/api/auth/logout',()=>{
       ElMessage.success("退出登录");

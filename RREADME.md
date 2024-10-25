@@ -1,5 +1,4 @@
 # 索引表
-
 1. [项目概述](#项目概述)
 2. [实现所用技术](#实现所用技术)
 3. [PSP表格](#psp表格)
@@ -50,13 +49,28 @@
  |测试|     测试网站功能是否符合预期-未考虑安全性     |2h |2h|
 
 # 服务器部署
-出于成本和安全性考虑，并没有部署上线，但是你可以使用[docker desktop](https://www.docker.com/)运行，请到达该项目的根目录处运行指令
+出于成本和安全性考虑，并没有部署上线，但是你可以使用[docker desktop](https://www.docker.com/)构建并运行
+> 再进行构建命令前，如果你想体验邮箱验证功能，你可以到[docker-compose.yml](docker-compose.yml)页面修改下面两项内容
+>```yaml
+>      MAIL_USERNAME: your_email@qq.com
+>      MAIL_PASSWORD: your_email_password
+>```
+> 如果仍然无法使用，请前往[application.yaml](study_backend%2Fsrc%2Fmain%2Fresources%2Fapplication.yaml)修改一下三项，
+> 注意下面的密码是开启smtp服务后提供的秘钥，不是正常邮箱密码
+> ```yaml
+>   username: ${MAIL_USERNAME:user@example.com}
+>   password: ${MAIL_PASSWORD:password}
+>   from: ${MAIL_USERNAME:user@example.com}
+>```
+
+
+请到达该项目的根目录处运行指令
 ```cmd/powershell
 docker-compose up --build
 ```
 如果构建时报错，应该是网络问题，请使用代理工具或自行添加国内镜像
 # 成品展示 -- 本地环境
-[video.mp4](video.mp4)
+![video.gif](video.gif)
 # 代码解释
 ## 后端 
 1. AuthorizeController -> 用户注册类
