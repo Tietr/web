@@ -23,19 +23,16 @@ public interface MemberMapper {
     @Select("select * from team_member where email =#{email}")
     TeamMember findByEmail(String email);
     //增
-    @Insert("insert into team_member (name,address,date,email) values (#{name},#{address},#{date},#{email})")
-    void insert(String name,String address,String date,String email);
+    @Insert("insert into team_member (name,address,date,email,star) values (#{name},#{address},#{date},#{email},#{star})")
+    void insert(String name,String address,String date,String email,boolean star);
 
     //改
-    @Update("update team_member set name=#{newName},address=#{newAddress},date=#{newDate},email=#{newEmail} where email =#{oldEmail}")
-    int update(String oldEmail,String newName,String newAddress,String newDate,String newEmail);
+    @Update("update team_member set name=#{newName},address=#{newAddress},date=#{newDate},email=#{newEmail},star=#{star} where email =#{oldEmail}")
+    int update(String oldEmail,String newName,String newAddress,String newDate,String newEmail,boolean star);
 
     //删
     @Delete("delete from team_member where email=#{email}")
     int delete(String email);
-
-
-
 
     @Insert("INSERT INTO phones (member_id, phone) VALUES (#{memberId}, #{phone})")
     void addPhone(int memberId, String phone);

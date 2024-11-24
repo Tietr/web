@@ -29,7 +29,7 @@ public class TeamMemberServiceImpl implements TeamMemberService {
             return false;
         }
         return memberMapper.update(newTeamMember.getOldEmail(),newTeamMember.getName(), newTeamMember.getAddress(),
-                newTeamMember.getDate(),newTeamMember.getEmail()) > 0;
+                newTeamMember.getDate(),newTeamMember.getEmail(),newTeamMember.isStar()) > 0;
     }
     @Override
     public boolean deleteTeamMember(TeamMember teamMember) {
@@ -39,7 +39,7 @@ public class TeamMemberServiceImpl implements TeamMemberService {
 
     @Override
     public boolean addTeamMember(TeamMember teamMember) {
-        memberMapper.insert(teamMember.getName(), teamMember.getAddress(), teamMember.getDate(), teamMember.getEmail());
+        memberMapper.insert(teamMember.getName(), teamMember.getAddress(), teamMember.getDate(), teamMember.getEmail(),teamMember.isStar());
         return true;
     }
 
@@ -100,12 +100,10 @@ public class TeamMemberServiceImpl implements TeamMemberService {
         if(getPhoneByTeamId(id)==null){
             return false;
         }else {
-            if (getPhoneByTeamId(id).equals(phone)) {
-                memberMapper.deletePhone(id,phone);
-                return true;
-            }else {
-                return false;
-            }
+
+        memberMapper.deletePhone(id,phone);
+        return true;
+
         }
     }
 

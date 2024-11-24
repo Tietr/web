@@ -40,6 +40,7 @@ public class MemberController {
         if(member == null){
             return RestBean.failure(300,"成员不存在");
         }else {
+
             teamMemberService.addPersonPhone(member.getId(),phone);
             return RestBean.success();
         }
@@ -130,7 +131,7 @@ public class MemberController {
 
 
     @PostMapping("/import")
-    public RestBean<String> importExcel(@RequestParam("file") MultipartFile file) {
+    public RestBean<String> importExcel(@RequestPart("file") MultipartFile file) {
         try {
             teamMemberService.importMembersFromExcel(file);
             return RestBean.success("Excel 导入成功");
