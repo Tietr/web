@@ -11,7 +11,7 @@
  Target Server Version : 50744 (5.7.44-log)
  File Encoding         : 65001
 
- Date: 25/10/2024 15:07:29
+ Date: 24/11/2024 14:52:21
 */
 
 SET NAMES utf8mb4;
@@ -29,7 +29,7 @@ CREATE TABLE `db_account`  (
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `unique_name`(`username`) USING BTREE,
   UNIQUE INDEX `unique_email`(`email`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of db_account
@@ -51,6 +51,25 @@ CREATE TABLE `persistent_logins`  (
 -- ----------------------------
 -- Records of persistent_logins
 -- ----------------------------
+INSERT INTO `persistent_logins` VALUES ('admin', 'WXeCnHyzLL5CveSwGuVj3w==', 'InRvLMgkdEfCE8kEsTKsrg==', '2024-11-23 08:52:10');
+
+-- ----------------------------
+-- Table structure for phones
+-- ----------------------------
+DROP TABLE IF EXISTS `phones`;
+CREATE TABLE `phones`  (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `member_id` int(11) NOT NULL,
+  `phone` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `ID`(`member_id`) USING BTREE,
+  INDEX `UNI_PHONE`(`phone`) USING BTREE,
+  CONSTRAINT `ID` FOREIGN KEY (`member_id`) REFERENCES `team_member` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of phones
+-- ----------------------------
 
 -- ----------------------------
 -- Table structure for team_member
@@ -62,14 +81,15 @@ CREATE TABLE `team_member`  (
   `address` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `email` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `date` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `star` tinyint(1) UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `UNI_EMAIL`(`email`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 18 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 10 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of team_member
 -- ----------------------------
-INSERT INTO `team_member` VALUES (1, 'name1', 'address1', 'tessdadadat@qq.com', '2024-10-25');
-INSERT INTO `team_member` VALUES (2, 'namw2', 'address2', 'emmm@qq.com', '2024-10-25');
+INSERT INTO `team_member` VALUES (8, 'sdsd', 'dfsf', 'tessdadadat@qq.com', 'ds', 0);
+INSERT INTO `team_member` VALUES (9, 'sssdfeifei', 'dksjk', 'emmm@qq.com', 'tet', 0);
 
 SET FOREIGN_KEY_CHECKS = 1;

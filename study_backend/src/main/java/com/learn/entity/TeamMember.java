@@ -10,14 +10,17 @@ public class TeamMember {
             message = "Invalid email format")
     String email;
     String date;
+    boolean star;
+
     @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
             message = "Invalid email format")
     String oldEmail;
-    public TeamMember(String name, String address, String email, String date) {
+    public TeamMember(String name, String address, String email, String date, boolean star) {
         this.name = name;
         this.address = address;
         this.email = email;
         this.date = date;
+        this.star = star;
     }
     public TeamMember() {}
 }

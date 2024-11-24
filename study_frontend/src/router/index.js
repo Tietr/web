@@ -29,7 +29,7 @@ const router = createRouter({
       component:()=> import('@/views/IndexView.vue'),
       children: [{
         path: '',
-        name: '',
+        name: '_index',
         component:()=>import('@/components/index/DataTable.vue')
       }]
     }

@@ -7,6 +7,7 @@ const store = useStore()
 
 if(store.auth.user == null) {
   get('/api/user/me', (message) => {
+    console.log(message)
     store.auth.user = message
     router.push('/index')
   }, () => {
